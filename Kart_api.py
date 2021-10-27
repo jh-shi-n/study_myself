@@ -6,6 +6,7 @@ api_key = "~API~"
 #API는 header로 입력
 headers = {"Authorization" : api_key}
 
+#F-formating을 활용
 api_url = f'https://api.nexon.co.kr/kart/v1.0/users/nickname/{nicknames}'
 status_url = f'https://api.nexon.co.kr/kart/v1.0/users/{user_id}'
 match_url = f'https://api.nexon.co.kr/kart/v1.0/users/{user_id}/matches'
@@ -17,10 +18,9 @@ user_id = res.json()['accessId']
 res3 = requests.get(status_url, headers = headers)
 stat = res3.json()
 
-
-
 if ('name' in stat) :
     user_frame = pd.DataFrame([stat['accessId'], stat['name'], stat['level']], index = ['고유코드','닉네임', '레벨'])
     print(user_frame)
+    
 else:
     print('오류')
