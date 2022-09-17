@@ -8,7 +8,8 @@ class fake_dataset(Dataset):
     def read_data_set(self):
         all_img_files = []
         all_labels = []
-
+        
+        # Check the class name by using os.walk
         class_names = os.walk(self.dataset_path).__next__()[1]
 
         for index, class_name in enumerate(class_names):
