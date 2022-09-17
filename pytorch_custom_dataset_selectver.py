@@ -3,7 +3,7 @@ from torch.utils.data import Dataset
 from PIL import Image
 
 
-class fake_dataset(Dataset):
+class custom_dataset(Dataset):
     # Check the dataset Path
     def read_data_set(self):
         all_img_files = []
