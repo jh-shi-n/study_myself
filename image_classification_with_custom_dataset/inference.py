@@ -142,7 +142,7 @@ def save_rgb_result_images(testset, calculate_result):
     path_info = []
     os.makedirs("./outputs_result", exist_ok=True)
 
-    # 이미지 이름 리스트 dataloader에서 꺼내오기
+    # Get image info from dataloader
     for c in range(0, len(testset)):
         _, _, path_RGB = testset[c]
         path_info.append(path_RGB)
@@ -150,10 +150,10 @@ def save_rgb_result_images(testset, calculate_result):
     for k in range(0, len(path_info)):
 
         if calculate_result[k] == 0:
-            whole_image_fake = './output_V2_test_origin/RGB/fake/'
+            whole_image_fake = 'PATH'
             image_name = path_info[k].split("/")[-1].replace("h_", "")
 
-            # 원본 이미지 Crop
+            # Origin Crop
             open_image_fake = cv2.imread(
                 os.path.join(whole_image_fake, image_name))
 
@@ -174,11 +174,11 @@ def save_rgb_result_images(testset, calculate_result):
             put_text_image[origin_img_info[0]-input_img_info[0]
                 : origin_img_info[0], 0: input_img_info[1]] = input_image
 
-            cv2.imwrite("./outputs_result/result_{}".format(image_name),
+            cv2.imwrite("./outputs/result_{}".format(image_name),
                         cv2.cvtColor(put_text_image, cv2.COLOR_BGR2RGB))
 
         if calculate_result[k] == 1:
-            whole_image_real = './output_V2_test_origin/RGB/real/'
+            whole_image_real = 'PATH'
             image_name = path_info[k].split("/")[-1].replace("h_", "")
 
             # 원본 이미지 Crop
@@ -199,7 +199,7 @@ def save_rgb_result_images(testset, calculate_result):
             input_img_info = input_image.shape
             origin_img_info = put_text_image.shape
 
-            put_text_image[origin_img_info[0]-input_img_info[0]                           : origin_img_info[0], 0: input_img_info[1]] = input_image
+            put_text_image[origin_img_info[0]-input_img_info[0]: origin_img_info[0], 0: input_img_info[1]] = input_image
 
             cv2.imwrite("./outputs_result/result_{}".format(image_name),
                         cv2.cvtColor(put_text_image, cv2.COLOR_BGR2RGB))
@@ -208,9 +208,9 @@ def save_rgb_result_images(testset, calculate_result):
 def parse_opt():
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', type=str,
-                        default="./model_best_resnet18.pth")
+                        default="./model_best.pth")
     parser.add_argument('--datapath', type=str,
-                        default="./output_v2_1000/test/")
+                        default="PATH")
 
     opt = parser.parse_args()
 
@@ -220,34 +220,33 @@ def parse_opt():
 if __name__ == '__main__':
     opt = parse_opt()
 
-    # 모델 로드
-    model = torch.load(
-        opt.weights, map_location='cuda:2')
+    # model load
+    model = torch.load(opt.weights, map_location='cuda:2')
 
     print("load model weights...")
     print("Weight PATH : {}\n".format(opt.weights))
 
-    # 테스트 및 인퍼런스 전용 Transform 정의
+    # Transform part for test
     test_transform = transforms.Compose([
         transforms.Resize((256, 256)),
         transforms.ToTensor()])
 
     # Create Depth dataset
-    testset_DEPTH = fake_dataset(path="./output_V2_1000/test/DEPTH",
+    testset_DEPTH = fake_dataset(path="./DEPTH",
                                  transform=test_transform)
 
     dataloader_DEPTH = {'test': DataLoader(
         testset_DEPTH, batch_size=1, shuffle=False)}
 
     # Create RGB dataset
-    testset_RGB = fake_dataset(path="./output_V2_1000/test/RGB",
+    testset_RGB = fake_dataset(path="./RGB",
                                transform=test_transform)
 
     dataloader_RGB = {'test': DataLoader(
         testset_RGB, batch_size=1, shuffle=False)}
 
     # Create inference img dataset
-    testset_INFER = fake_dataset(path="./output_V2_1000/test_inferenceimg/RGB",
+    testset_INFER = fake_dataset(path="./RGB",
                                  transform=test_transform)
 
     dataloader_INFER = {'test': DataLoader(
@@ -267,12 +266,3 @@ if __name__ == '__main__':
     # Check the accuracy
     accuracy = calculating_percentage(confu_rgb)
     print("TESTSET Accuracy : {} % \n".format(accuracy))
-
-    # Save images and print the result files name
-    result_INFER = inference_INFER(model, dataloader_INFER, 'cuda:2')
-    save_rgb_result_images(testset_INFER, result_INFER)
-
-    print("Inference on 10 Samples...")
-    # save_result =[files for files in os.listdir("./outputs_result") if files.endswith(".jpg")]
-    print("Samples are saved in 'outputs_result' directory \n {}".format(
-        os.listdir("./outputs_result")))
