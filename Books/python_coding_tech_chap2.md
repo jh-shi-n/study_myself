@@ -1,4 +1,5 @@
 # Intro
+`https://www.notion.so/jhyeokshin/Chapter-2-2bacec03d9744f3d8fa651bab1d79f36`
 
 - 파이썬에서 반복적인 작업을 자동화하기 위해 조직적으로 관리하는 가장 일반적인 방법은 `List`
 - 이에 보완할 수 있는 데이터 타입 : `dict`
